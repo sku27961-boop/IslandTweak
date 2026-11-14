@@ -15,7 +15,13 @@ jobs:
       - name: Install Theos
         run: |
           sudo apt-get update
-          sudo apt-get install -y git curl perl make fakeroot rsync unzip build-essential libtinfo5 xz-utils || sudo apt-get install -y libtinfo6
+          sudo apt-get install -y git curl perl make fakeroot rsync unzip build-essential xz-utils
+          sudo apt-get install -y libtinfo5 || sudo apt-get install -y libtinfo6
+          # Older Theos toolchain binaries need libtinfo.so.5 specifically; newer Ubuntu only ships .so.6
+          LIBTINFO6=$(find / -name "libtinfo.so.6*" 2>/dev/null | head -n1)
+          if [ -n "$LIBTINFO6" ] && [ ! -f "$(dirname $LIBTINFO6)/libtinfo.so.5" ]; then
+            sudo ln -s "$LIBTINFO6" "$(dirname $LIBTINFO6)/libtinfo.so.5"
+          fi
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
 
@@ -44,6 +50,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: IslandTweak-deb
+          path: |
+            packages/*.deb
+            islandtweak/packages/*.deb
+            islandtweakprefs/packages/*.deb
+          if-no-files-found: warn
           path: |
             packages/*.deb
             islandtweak/packages/*.deb
