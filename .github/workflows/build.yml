@@ -16,11 +16,20 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y git curl perl make fakeroot rsync unzip build-essential xz-utils
-          sudo apt-get install -y libtinfo5 || sudo apt-get install -y libtinfo6
-          LIBTINFO6=$(find / -name "libtinfo.so.6*" 2>/dev/null | head -n1)
-          if [ -n "$LIBTINFO6" ] && [ ! -f "$(dirname $LIBTINFO6)/libtinfo.so.5" ]; then
-            sudo ln -s "$LIBTINFO6" "$(dirname $LIBTINFO6)/libtinfo.so.5"
-          fi
+          sudo apt-get install -y libtinfo5 libxml2 libedit2 || sudo apt-get install -y libtinfo6 libxml2 libedit2
+          link_old_soname() {
+            OLD_NAME="$1"
+            BASE_NAME="$2"
+            EXISTING=$(find /usr/lib /lib -name "${BASE_NAME}.*" 2>/dev/null | sort -V | tail -n1)
+            if [ -n "$EXISTING" ] && [ ! -e "$(dirname $EXISTING)/$OLD_NAME" ]; then
+              sudo ln -s "$EXISTING" "$(dirname $EXISTING)/$OLD_NAME"
+              echo "Linked $OLD_NAME -> $EXISTING"
+            fi
+          }
+          link_old_soname libtinfo.so.5 libtinfo.so
+          link_old_soname libxml2.so.2 libxml2.so
+          link_old_soname libedit.so.2 libedit.so
+          sudo ldconfig
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
 
