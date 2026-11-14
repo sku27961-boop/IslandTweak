@@ -5,7 +5,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = IslandTweak
 IslandTweak_FILES = Tweak.xm
-IslandTweak_CFLAGS = -fobjc-arc -Wno-deprecated-declarations
+IslandTweak_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -Wno-unused-const-variable -Wno-unused-variable -Wno-unused-function
 IslandTweak_FRAMEWORKS = UIKit CoreGraphics QuartzCore AVFoundation CoreTelephony MediaPlayer
 
 include $(THEOS_MAKE_PATH)/tweak.mk
