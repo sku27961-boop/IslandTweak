@@ -1,0 +1,42 @@
+name: Build Tweak
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Theos
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git curl perl make clang fakeroot rsync libtinfo5 || sudo apt-get install -y libtinfo6
+          git clone --recursive https://github.com/theos/theos.git $HOME/theos
+          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+
+      - name: Install iOS SDK
+        run: |
+          git clone https://github.com/theos/sdks.git $HOME/sdks-src --depth 1
+          cp -r $HOME/sdks-src/iPhoneOS15.6.sdk $HOME/theos/sdks/
+
+      - name: Build package
+        env:
+          THEOS: /home/runner/theos
+        run: |
+          export PATH=$THEOS/bin:$PATH
+          make package THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1
+
+      - name: Upload .deb
+        uses: actions/upload-artifact@v4
+        with:
+          name: IslandTweak-deb
+          path: |
+            packages/*.deb
+            islandtweak/packages/*.deb
+            islandtweakprefs/packages/*.deb
+          if-no-files-found: warn
