@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
-#import <CoreTelephony/CoreTelephony.h>
+#import <CoreTelephony/CTCallCenter.h>
+#import <CoreTelephony/CTCall.h>
 #import <dlfcn.h>
-
 // ===== Settings (read from the Settings app page) =====
 #define kPrefsAppID CFSTR("com.example.islandtweak")
 #define kReloadNotify "com.example.islandtweak/reload"
