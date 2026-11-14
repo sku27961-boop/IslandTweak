@@ -1,4 +1,4 @@
-name: Build Tweak
+nname: Build Tweak
 
 on:
   workflow_dispatch:
@@ -15,9 +15,18 @@ jobs:
       - name: Install Theos
         run: |
           sudo apt-get update
-          sudo apt-get install -y git curl perl make clang fakeroot rsync libtinfo5 || sudo apt-get install -y libtinfo6
+          sudo apt-get install -y git curl perl make fakeroot rsync unzip build-essential libtinfo5 xz-utils || sudo apt-get install -y libtinfo6
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+
+      - name: Install Linux toolchain (clang for iOS cross-compiling)
+        run: |
+          curl -LO https://github.com/sbingner/llvm-project/releases/download/v10.0.0-2/linux-ios-arm64e-clang-toolchain.tar.lzma
+          TMP=$(mktemp -d)
+          tar --lzma -xvf linux-ios-arm64e-clang-toolchain.tar.lzma -C $TMP
+          mkdir -p $HOME/theos/toolchain/linux/iphone
+          mv $TMP/ios-arm64e-clang-toolchain/* $HOME/theos/toolchain/linux/iphone/
+          rm -rf linux-ios-arm64e-clang-toolchain.tar.lzma $TMP
 
       - name: Install iOS SDK
         run: |
