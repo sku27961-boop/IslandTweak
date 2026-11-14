@@ -11,4 +11,4 @@ include $(THEOS_MAKE_PATH)/bundle.mk
 
 internal-stage::
 	mkdir -p $(THEOS_STAGING_DIR)/Library/PreferenceLoader/Preferences
-	cp $(THEOS_PROJECT_DIR)/Entry.plist $(THEOS_STAGING_DIR)/Library/PreferenceLoader/Preferences/IslandTweakPrefs.plist
+	cp Entry.plist $(THEOS_STAGING_DIR)/Library/PreferenceLoader/Preferences/IslandTweakPrefs.plist
