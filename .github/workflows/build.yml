@@ -16,10 +16,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y git curl perl make fakeroot rsync unzip build-essential xz-utils
-          sudo apt-get install -y libtinfo5 libxml2 libedit2 || sudo apt-get install -y libtinfo6 libxml2 libedit2
+          # The prebuilt Linux clang toolchain was built against old Ubuntu lib sonames
+          # (libtinfo.so.5, libxml2.so.2, ...) that newer Ubuntu no longer ships by that
+          # exact name. Symlink whatever newer version IS installed to the old name.
           link_old_soname() {
-            OLD_NAME="$1"
-            BASE_NAME="$2"
+            OLD_NAME="$1"      # e.g. libtinfo.so.5
+            BASE_NAME="$2"     # e.g. libtinfo.so
             EXISTING=$(find /usr/lib /lib -name "${BASE_NAME}.*" 2>/dev/null | sort -V | tail -n1)
             if [ -n "$EXISTING" ] && [ ! -e "$(dirname $EXISTING)/$OLD_NAME" ]; then
               sudo ln -s "$EXISTING" "$(dirname $EXISTING)/$OLD_NAME"
