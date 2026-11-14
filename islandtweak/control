@@ -1,0 +1,9 @@
+Package: com.example.islandtweak
+Name: IslandTweak
+Version: 0.2
+Architecture: iphoneos-arm64
+Description: A custom Dynamic Island-style overlay for iPhone 7 (iOS 15.8.8)
+Maintainer: You
+Author: You
+Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5000), firmware (>= 15.0), preferenceloader
